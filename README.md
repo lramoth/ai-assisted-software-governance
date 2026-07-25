@@ -15,83 +15,53 @@ tool-agnostic, and suitable for an existing project.
 
 ## Add it to a project
 
-1. Copy `GOVERNANCE.md` into the root of your project.
-2. Keep it there as the single canonical copy of the principles.
-3. Add a short instruction to the agent guidance file your project uses.
-
-Do not replace an existing `AGENTS.md` or `CLAUDE.md`. Add the relevant
-instruction to it.
-
-### If your project has `AGENTS.md`
-
-Add:
+1. Copy `GOVERNANCE.md` into your project root.
+2. Add the snippet below to your agent instruction file — `AGENTS.md`
+   (Codex), `CLAUDE.md` (Claude Code), or both. Identical text in both is
+   fine; the snippet is short. If your `AGENTS.md` already points at
+   `CLAUDE.md`, put it in `CLAUDE.md` only.
+3. Do not paste `GOVERNANCE.md` itself into either file. Copies of the
+   snippet are cheap; copies of the document drift.
 
 ```markdown
 ## Engineering governance
 
-Before non-trivial implementation work, read and follow `GOVERNANCE.md`.
-Treat it as a set of constraints, not suggestions.
+Read `GOVERNANCE.md` at the start of this session, before implementation
+work. It is the constraint set for this project, not reference material.
 
-If a requested change conflicts with it or requires an architectural decision
-outside the task's scope, identify the conflict before establishing a new
-pattern.
+Re-read it after any context compaction.
+
+When a change touches an architectural concern, follow the pre-flight step
+at the top of the document before writing code.
+
+If a request conflicts with the document, say so before writing code.
 ```
 
-### If your project has `CLAUDE.md`
+## Check that it's working
 
-Add:
+Look at the session's tool log, not the agent's prose. `GOVERNANCE.md` should
+appear as an actual file read near the start of the session. A statement that
+it was read is not evidence; the tool call is.
 
-```markdown
-## Engineering governance
-
-Before non-trivial implementation work, read and follow `GOVERNANCE.md`.
-Treat it as a set of constraints, not suggestions.
-
-If a requested change conflicts with it or requires an architectural decision
-outside the task's scope, identify the conflict before establishing a new
-pattern.
-```
-
-### If your project has both
-
-Add the instruction to both files. Each agent will discover its own instruction
-file, while both point to the same `GOVERNANCE.md`.
-
-Do not copy the full governance document into each file. Multiple copies will
-eventually drift apart.
-
-### If your project has neither
-
-Create the instruction file used by your coding agent:
-
-- Codex: create `AGENTS.md`
-- Claude Code: create `CLAUDE.md`
-- Both tools: create both files
-
-Use this minimal content:
-
-```markdown
-# Agent Instructions
-
-Before non-trivial implementation work, read and follow `GOVERNANCE.md`.
-Treat it as a set of constraints, not suggestions.
-
-If a requested change conflicts with it or requires an architectural decision
-outside the task's scope, identify the conflict before establishing a new
-pattern.
-
-Prefer inspecting the repository over making assumptions about it.
-```
+Then test behavior on a task whose answer you already know: ask for a helper
+that already exists in your codebase and see whether the pre-flight names it
+under `Extending`. That measures whether the document changed what the agent
+did — the only thing worth measuring.
 
 ## How to use it
 
-The document is meant to govern how the project changes, not dictate formatting
-or technology choices. It should influence feature work, bug fixes, refactors,
-and code review without turning every small edit into an architecture exercise.
+The agent reads it once per session, at the start. You do not need to paste it
+into prompts.
 
-The agent should read it before non-trivial implementation work. You do not need
-to paste it into every prompt once the project's agent instruction file points
-to it.
+It governs how the project changes — not formatting or technology choices.
+Small edits stay small: the document's opening section states the narrow
+conditions under which the pre-flight is skipped.
+
+When a task forces a genuine architectural decision, the agent stops and
+presents it rather than deciding silently. Once you've decided, the agent
+records the outcome in the project's existing repository documentation. It
+asks first if the established mechanism is external — an issue tracker, wiki,
+or anything outside the repo — or if no decision mechanism exists.
 
 When a task exposes a genuine conflict, the expected behavior is not automatic
 refusal. The agent should explain the conflict, propose the smallest coherent
@@ -107,6 +77,7 @@ This package does not prescribe:
 - a specific project structure
 - an architecture for your application
 - heavyweight engineering process
+- enforcement — nothing here fails a build or blocks a commit
 
 Those choices belong to the project. This document protects the coherence of
 whatever architecture the project already has.
@@ -116,6 +87,9 @@ whatever architecture the project already has.
 Treat `GOVERNANCE.md` as stable infrastructure. Change it when you want to
 change how agents are allowed to modify the project—not to record temporary
 project status or task-specific instructions.
+
+If you add or remove rules, keep the pre-flight step first in the document —
+the snippet refers to it by position.
 
 If you customize it, prefer a few rules that your project will actually enforce
 over a large handbook that agents will skim or ignore.
